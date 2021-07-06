@@ -6,16 +6,12 @@ import os
 import re
 import pathlib
 import subprocess
-import sys
+
 from termcolor import cprint
 
 
-#Add pytest
-#Build framework for  commandline tools.
+#todo Add pytest
 
-"""
-Global variable for local git repo.
-"""
 DEBUG = True
 PATH = pathlib.Path.home() / "git"
 
@@ -121,8 +117,11 @@ def is_version_string_valid(version_string: str) -> bool:
 
     """
 
-    #replace with regex
-    return version_string.startswith("v") and version_string[1:].isdigit() and len(version_string) == 4
+    match = re.match(r"v\d\d\d$", version_string)
+    if not match:
+        raise ValueError( "Version string format should be v<000-999>")
+    else:
+        return True
 
 
 def split_namespace(namespace: str):
