@@ -151,7 +151,7 @@ def set_context_env_variable(context_type: str, value: str) -> None:
 
     """
     type_upper = context_type.upper()
-    if type_upper in ["PROJECT", "SERVICE", "VERSION"]:
+    if type_upper in CONTEXT._value2member_map_:
         print(f"echo \tExporting {value} to {type_upper} | sed 's/^/  /';")
         print(f"export {type_upper}={value};")
 
