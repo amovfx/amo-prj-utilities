@@ -27,6 +27,10 @@ class CONTEXT(Enum):
     SERVICE = "SERVICE"
     VERSION = "VERSION"
 
+    @classmethod
+    def has_value(cls, value):
+        return value in cls._value2member_map_
+
 
 def is_project_name_valid_for_gcloud(name: str) -> bool:
     """
@@ -151,7 +155,7 @@ def set_context_env_variable(context_type: str, value: str) -> None:
 
     """
     type_upper = context_type.upper()
-    if type_upper in CONTEXT._value2member_map_:
+    if CONTEXT.has_value(type_upper):
         print(f"echo \tExporting {value} to {type_upper} | sed 's/^/  /';")
         print(f"export {type_upper}={value};")
 
