@@ -1,4 +1,4 @@
-
+from enum import Enum
 import fire
 import functools
 import json
@@ -16,7 +16,7 @@ DEBUG = True
 PATH = pathlib.Path.home() / "git"
 
 
-class CONTEXT:
+class CONTEXT(Enum):
     """
 
     Enum type class to remove strings from code.
@@ -334,9 +334,9 @@ class SetContext(object):
         """
 
         pprint("SetContext Environment Variables: ", 'yellow')
-        pprint(f"{CONTEXT.PROJECT}: {os.environ[CONTEXT.PROJECT]}", 'red', 1)
-        pprint(f"{CONTEXT.SERVICE}: {os.environ[CONTEXT.SERVICE]}", 'red', 1)
-        pprint(f"{CONTEXT.VERSION}: {os.environ[CONTEXT.VERSION]}", 'red', 1)
+        pprint(f"{CONTEXT.PROJECT.value}: {os.environ[CONTEXT.PROJECT.value]}", 'red', 1)
+        pprint(f"{CONTEXT.SERVICE.value}: {os.environ[CONTEXT.SERVICE.value]}", 'red', 1)
+        pprint(f"{CONTEXT.VERSION.value}: {os.environ[CONTEXT.VERSION.value]}", 'red', 1)
 
     def tprint(self, msg, color='default', indent=0):
         #todo: change this to a debug print
@@ -364,7 +364,7 @@ class SetContext(object):
 
         if project and is_project_name_valid_for_gcloud(project):
             clear_context_env_variables()
-            set_context_env_variable(CONTEXT.PROJECT, project)
+            set_context_env_variable(CONTEXT.PROJECT.value, project)
             self.change_directory_path(project_name=project)
             if does_gcloud_project_exist(project_name=project):
                 self.tprint("Project exists | sed 's/^/  /'")
@@ -381,7 +381,7 @@ class SetContext(object):
             self.set_terminal_prompt(project=project)
 
             if service:
-                set_context_env_variable(CONTEXT.SERVICE, service)
+                set_context_env_variable(CONTEXT.SERVICE.value, service)
                 self.change_directory_path(project_name=project,
                                            service_name=service)
 
@@ -389,7 +389,7 @@ class SetContext(object):
                                          service=service)
 
             if version:
-                set_context_env_variable(CONTEXT.VERSION, version)
+                set_context_env_variable(CONTEXT.VERSION.value, version)
                 self.change_directory_path(project_name=project,
                                            service_name=service,
                                            version_name=version)
