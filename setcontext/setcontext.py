@@ -2,6 +2,7 @@ from enum import Enum
 import fire
 import functools
 import json
+import logging
 import os
 import re
 import pathlib
@@ -59,6 +60,7 @@ def does_gcloud_project_exist(project_name: str) -> bool:
         Name of project.
     :return: bool
         True if a gcloud project exists with the name of project_name
+
     """
 
     output = subprocess.check_output("gcloud projects list --format json".split(" "))
@@ -316,9 +318,9 @@ class SetContext(object):
         """
 
         pprint("SetContext Environment Variables: ", 'yellow')
-        pprint(f"{CONTEXT.PROJECT.value}: {os.environ[CONTEXT.PROJECT.value]}", 'red', 1)
-        pprint(f"{CONTEXT.SERVICE.value}: {os.environ[CONTEXT.SERVICE.value]}", 'red', 1)
-        pprint(f"{CONTEXT.VERSION.value}: {os.environ[CONTEXT.VERSION.value]}", 'red', 1)
+        for member in CONTEXT:
+            pprint(f"{member}: {os.environ[member]}", 'red', 1)
+
 
     def tprint(self, msg, color='default', indent=0):
         #todo: change this to a debug print
