@@ -66,28 +66,6 @@ def does_gcloud_project_exist(project_name: str) -> bool:
     return True if project_name in project_names else False
 
 
-def does_project_exist(project_name: str) -> bool:
-    """
-
-    Test if a directory exists in the local git repo.
-
-    :param project_name:
-        Name of the project.
-    :return: bool
-        True if a folder of name project_name exists in the local git repo.
-
-    """
-
-    path = PATH
-    path /= project_name
-    is_dir = path.is_dir()
-    if is_dir:
-        print(f"echo Project exists: {path};")
-    else:
-        print(f"echo Project does not exist: {path};")
-    return path.is_dir()
-
-
 def does_service_version_exist(service_or_version_name: str) -> bool:
     """
 
