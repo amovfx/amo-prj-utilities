@@ -11,6 +11,8 @@ import subprocess
 from termcolor import cprint
 
 
+
+
 #todo Add pytest
 
 DEBUG = True
@@ -252,8 +254,6 @@ class SetContext(object):
         print(prompt_string)
 
 
-
-
     def create_gcloud_project(self, project_name: str) -> None:
         """
 
@@ -266,6 +266,8 @@ class SetContext(object):
         """
 
         print(f"gcloud components update --quiet && gcloud projects create {project_name};")
+        print("gcloud app create --region=us-central")
+
 
     def set_gcloud_project(self, project_name: str) -> None:
         """
@@ -383,6 +385,12 @@ class SetContext(object):
                                          version=version)
 
 if __name__ == '__main__':
+
+    def logging_extended(msg: str):
+        logging.debug(f"echo {msg}")
+
+
+    logging.debug = logging_extended
     fire.Fire(SetContext)
 
 
