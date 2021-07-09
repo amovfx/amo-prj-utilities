@@ -164,17 +164,7 @@ def set_context_env_variable(context_type: str, value: str) -> None:
         print(f"export {type_upper}={value};")
 
 
-def clear_context_env_variables():
-    """
 
-    Sets the context environment variables to '' to avoid shell navigation errors. If a user sets the contexts to a project
-    from a lower namespace such as a service or a version, we will want the environment variables to be empty.
-
-    """
-    print("echo Clearing context environment variables...;")
-    for var in ["PROJECT", "SERVICE", "VERSION"]:
-        set_context_env_variable(context_type=var, value='')
-    print("echo \n;")
 
 
 def pprint(msg: str, color: str = 'default', indent: int = 0) -> None:
@@ -229,6 +219,18 @@ class SetContext(object):
             path.mkdir(parents=True, exist_ok=True)
             print(f"cd {path_str};")
     #memoize
+
+    def clear_context_env_variables(self):
+        """
+
+        Sets the context environment variables to '' to avoid shell navigation errors. If a user sets the contexts to a project
+        from a lower namespace such as a service or a version, we will want the environment variables to be empty.
+
+        """
+        print("echo Clearing context environment variables...;")
+        for var in ["PROJECT", "SERVICE", "VERSION"]:
+            set_context_env_variable(context_type=var, value='')
+        print("echo \n;")
 
     def set_terminal_prompt(self, project=None,
                             service=None,
@@ -375,7 +377,7 @@ class SetContext(object):
             print(f"echo Setting Context to namespace {project}:{service}:{version}...;")
 
         if project and is_project_name_valid_for_gcloud(project):
-            clear_context_env_variables()
+            self.clear_context_env_variables()
             set_context_env_variable(CONTEXT.PROJECT.value, project)
             self.change_directory_path(project_name=project)
             if does_gcloud_project_exist(project_name=project):
