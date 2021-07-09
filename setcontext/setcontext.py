@@ -266,7 +266,33 @@ class SetContext(object):
         """
 
         print(f"gcloud components update --quiet && gcloud projects create {project_name};")
-        print("gcloud app create --region=us-central")
+        self.set_gcloud_project(project_name)
+        print("gcloud app create --region=us-central;")
+
+    def delete_gcloud_projects(self):
+
+        output = subprocess.check_output("gcloud projects list --format json".split(" "))
+        json_str = output.decode('utf-8')
+        json_data = json.loads(json_str)
+
+        for project in json_data:
+            prj_id = project['projectId']
+            print(f"echo Deleting project: {prj_id};")
+            print(f"gcloud projects delete {prj_id};")
+
+    def delete_conda_envs(self):
+        output = subprocess.check_output("conda env list --json".split(" "))
+        json_str = output.decode('utf-8')
+        json_data = json.loads(json_str)
+
+        for env in json_data["envs"]:
+            if input(f"echo Delete {env.split('/')[-1]}: ").lower() == 'y':
+                print (f"echo Confirmed: deleteing {env}")
+                output = subprocess.check_output(f"conda env remove -n {env.split('/')[-1]}")
+
+
+
+
 
 
     def set_gcloud_project(self, project_name: str) -> None:
