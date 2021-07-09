@@ -10,9 +10,6 @@ import subprocess
 
 from termcolor import cprint
 
-
-
-
 #todo Add pytest
 
 DEBUG = True
