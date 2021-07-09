@@ -1,12 +1,20 @@
 setcontext () {
+    : '
+
+  This function sets the conda environmet and then calls the setcontext function in SetContext.
+
+  '
   conda activate amo-prj-utilities;
   eval `python /Users/andrewoseen/git/amo-prj-utilities/setcontext/setcontext.py setcontext $1`;
 }
 
-
-
 removecontext () {
-  #this is meant to destr
+    : '
+
+  This deletes the gcloud project, conda environment, reemote repo, local repo
+  and clears the environment.
+
+  '
   conda activate amo-prj-utilities
   if [ $# -eq 0 ]
     then
@@ -32,7 +40,7 @@ removecontext () {
   echo "Removing https://api.github.com/repos/$git_user/$project"
   curl -u $git_user:$access_token -X "DELETE" https://api.github.com/repos/$git_user/$project
 
-  #remove folder
+  #remove local repo
   rm -rf ~/git/"$project"
 
   #clear environment variables
@@ -41,15 +49,12 @@ removecontext () {
 
 }
 
-
-
-delcontexts () {
-  for d in $1; do
-    delcontext $d
-  done
-}
-
 del_conda_envs () {
+  : '
+
+  Loops through conda environments and prompts for removal.
+
+  '
 
   for i in $(conda env list --json | jq -c '.envs[]'); do
     echo "Delete $i (y/n)?";
@@ -64,12 +69,22 @@ del_conda_envs () {
 
 }
 
-list_repos () {
+list_remote_repos () {
+    : '
+
+  Lists remote repos
+
+  '
   local git_user=$(git config user.name)
   curl "https://api.github.com/users/$git_user/repos?per_page=100" | grep -o 'git@[^"]*'
 }
 
 del_remote_repo () {
+    : '
+
+  Loops through remote repos and prompts for removal.
+
+  '
   local git_user=$(git config user.name)
   local access_token=$(cat /Users/andrewoseen/git/amo-prj-utilities/setcontext/delete_repo_token)
   echo "$access_token"
@@ -90,6 +105,11 @@ del_remote_repo () {
 }
 
 del_local_repo () {
+    : '
+
+  Loops through local repos and prompts for removal.
+
+  '
   for repo in ~/git/*/; do
     echo "Delete $repo? (y/n)?"
     read CONT </dev/tty;
@@ -102,6 +122,3 @@ del_local_repo () {
     fi
   done
 }
-
-
-
