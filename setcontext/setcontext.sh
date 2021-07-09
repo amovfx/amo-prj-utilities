@@ -39,7 +39,7 @@ del_remote_repo () {
   local access_token=$(cat /Users/andrewoseen/git/amo-prj-utilities/setcontext/delete_repo_token)
   echo "$access_token"
   local git_repos=$(curl "https://api.github.com/users/$git_user/repos?per_page=100" | grep -o 'git@[^"]*')
-  #curl -u amovfx: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 -X "DELETE" https://api.github.com/repos/amovfx/test
+  #curl -u amovfx:key -X "DELETE" https://api.github.com/repos/amovfx/test
   for repo in $git_repos
   do
     echo $repo
