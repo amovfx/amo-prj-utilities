@@ -436,6 +436,8 @@ class SetContext(object):
                 self.set_terminal_prompt(project=project,
                                          service=service,
                                          version=version)
+        self.tprint(f"Setting ActiveContext to : {namespace}", TCOLOR.CYAN,0)
+        set_context_env_variable(CONTEXT.ACTIVECONTEXT.value, namespace)
 
     def setmodule(self, namespace: str, debug: int=0):
         """
@@ -458,11 +460,12 @@ class SetContext(object):
         if project:
             self.clear_context_env_variables()
             set_context_env_variable(CONTEXT.PROJECT.value, project)
-            self.change_directory_path(project_name=project)
-            if does_service_version_exist(project):
+            if does_project_or_library_exist(project):
+                self.change_directory_path(project_name=project)
                 self.tprint(f"Library: {project} exists", TCOLOR.YELLOW, indent=2)
 
             else:
+                self.change_directory_path(project_name=project)
                 self.tprint(f"Creating library: {project}", TCOLOR.GREEN, indent=2)
                 self.create_git_repo()
 
@@ -480,6 +483,9 @@ class SetContext(object):
                                            service_name=service)
                 self.set_terminal_prompt(project=project,
                                          service=service)
+
+        self.tprint(f"Setting ActiveContext to : {namespace}", TCOLOR.CYAN,0)
+        set_context_env_variable(CONTEXT.ACTIVECONTEXT.value, namespace)
 
     def tprint(self, msg, color, indent=0):
         """
