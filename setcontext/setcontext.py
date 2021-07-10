@@ -31,6 +31,20 @@ class CONTEXT(Enum):
     def has_value(cls, value):
         return value in cls._value2member_map_
 
+class TCOLOR(Enum):
+    """
+
+    Enum for terminal colors.
+
+    """
+    RED = "31m"
+    GREEN = "32m"
+    YELLOW = "33m"
+    BLUE = "34m"
+    PURPLE = "35m"
+    CYAN = "36m"
+    WHITE = "0m"
+
 
 def is_project_name_valid_for_gcloud(name: str) -> bool:
     """
@@ -69,6 +83,20 @@ def does_gcloud_project_exist(project_name: str) -> bool:
     project_names = [project['name'] for project in json_data]
 
     return True if project_name in project_names else False
+
+def does_project_or_library_exist(project_or_library_name: str) -> bool:
+    """
+
+    Quick function to see if the project or library exists in the git folder.
+
+    :param project_or_library_name:
+        The name of the project or library
+    :return: bool
+        True if path exists
+    """
+
+    path = PATH / project_or_library_name
+    return path.is_dir()
 
 
 def does_service_version_exist(service_or_version_name: str) -> bool:
@@ -208,8 +236,9 @@ class SetContext(object):
 
         path_str = path.absolute().as_posix()
 
+        self.tprint(f"Setting current working directory to: {path_str}", TCOLOR.PURPLE, indent=2)
+
         if path.is_dir():
-            print(f"echo Setting dir to {path_str};")
             print(f"cd {path_str};")
 
         else:
@@ -325,6 +354,7 @@ class SetContext(object):
 
         :param env_name:
         """
+        self.tprint(f"Setting conda env: {env_name}", TCOLOR.BLUE, 3)
         print(f"conda activate {env_name};")
 
     def create_git_repo(self):
@@ -349,11 +379,6 @@ class SetContext(object):
             pprint(f"{member}: {os.environ[member]}", 'red', 1)
 
 
-    def tprint(self, msg, color='default', indent=0):
-        #todo: change this to a debug print
-        print(f"echo {msg};")
-
-
     def setcontext(self, namespace: str, debug: int=0):
         """
 
@@ -369,7 +394,7 @@ class SetContext(object):
         """
 
         project, service, version = split_namespace(namespace)
-        self.tprint("Setting context")
+        self.tprint("Setting context", "GREEN",0)
         if debug:
             print(f"echo Setting Context to namespace {project}:{service}:{version}...;")
 
@@ -378,12 +403,12 @@ class SetContext(object):
             set_context_env_variable(CONTEXT.PROJECT.value, project)
             self.change_directory_path(project_name=project)
             if does_gcloud_project_exist(project_name=project):
-                self.tprint("Project exists | sed 's/^/  /'")
+                self.tprint(f"Project {project} exists", "YELLOW", 1)
                 self.set_gcloud_project(project_name=project)
                 self.set_conda_env(env_name=project)
 
             else:
-                self.tprint("Creating new project | sed 's/^/  /'")
+                self.tprint(f"Creating new project: {project}", "GREEN", 1)
 
                 self.create_gcloud_project(project_name=project)
                 self.create_conda_env(env_name=project)
@@ -392,6 +417,7 @@ class SetContext(object):
             self.set_terminal_prompt(project=project)
 
             if service:
+                self.tprint(f"Setting service to: {service}", "GREEN", 2)
                 set_context_env_variable(CONTEXT.SERVICE.value, service)
                 self.change_directory_path(project_name=project,
                                            service_name=service)
@@ -400,6 +426,7 @@ class SetContext(object):
                                          service=service)
 
             if version:
+                self.tprint(f"Setting service to: {version}", "GREEN", 3)
                 set_context_env_variable(CONTEXT.VERSION.value, version)
                 self.change_directory_path(project_name=project,
                                            service_name=service,
@@ -408,6 +435,79 @@ class SetContext(object):
                 self.set_terminal_prompt(project=project,
                                          service=service,
                                          version=version)
+
+    def setmodule(self, namespace: str, debug: int=0):
+        """
+
+        This is the same as setcontext except that it doesnt create a gcloud project.
+
+        Ex:
+        eval `python setcontext.py setcontext my_project_name:my_service_or_module/v<001-999>
+
+        :param namespace:
+            A string to determine where you are working. project:service:version
+
+        """
+
+        project, service, version = split_namespace(namespace)
+        self.tprint("Setting module", TCOLOR.GREEN, indent=1)
+        if debug:
+            print(f"echo Setting Context to namespace {project}:{service}:{version}...;")
+
+        if project:
+            self.clear_context_env_variables()
+            set_context_env_variable(CONTEXT.PROJECT.value, project)
+            self.change_directory_path(project_name=project)
+            if does_service_version_exist(project):
+                self.tprint(f"Library: {project} exists", TCOLOR.YELLOW, indent=2)
+
+            else:
+                self.tprint(f"Creating library: {project}", TCOLOR.GREEN, indent=2)
+                self.create_git_repo()
+
+            self.set_terminal_prompt(project=project)
+
+            if service:
+                set_context_env_variable(CONTEXT.SERVICE.value, service)
+                if does_service_version_exist(service):
+                    self.tprint(f"Creating module: {service}", TCOLOR.GREEN, indent=2)
+                    self.set_conda_env(env_name=service)
+                else:
+                    self.create_conda_env(env_name=service)
+
+                self.change_directory_path(project_name=project,
+                                           service_name=service)
+                self.set_terminal_prompt(project=project,
+                                         service=service)
+
+    def tprint(self, msg, color, indent=0):
+        """
+
+        This is a function that prints colored text to the terminal from bash evaluate statements.
+        Usefull for debugging. This should monkeypatch the logging module.
+
+        :param msg:
+            Message you would like to print to terminal.
+        :param color:
+            The color of the message.
+        :param indent:
+            The number of dashes that should be prefixed to the message.
+        :return:
+            None
+        """
+
+        if isinstance(color, TCOLOR):
+            color = color.value
+        else:
+            if color.type() == str:
+                color_map = {k.name: k.value for k in TCOLOR}
+                color = color_map[color]
+
+        spaces = "----" * indent
+        print(f"""echo -e "\033[1;{color}{spaces}{msg}\033[0m";""")
+        print("echo \n;")
+
+
 
 if __name__ == '__main__':
 
