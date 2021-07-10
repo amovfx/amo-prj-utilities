@@ -1,10 +1,20 @@
+echo "setcontext.sh is now sourced."
+cd ~/git/
+setcontextenv="amo-prj-utilities"
+eval `python /Users/andrewoseen/git/amo-prj-utilities/setcontext/setcontext.py set_terminal_prompt`;
+
+setmodule() {
+  conda activate $setcontextenv;
+  eval `python /Users/andrewoseen/git/amo-prj-utilities/setcontext/setcontext.py setmodule $1`;
+}
+
 setcontext () {
     : '
 
   This function sets the conda environmet and then calls the setcontext function in SetContext.
 
   '
-  conda activate amo-prj-utilities;
+  conda activate $setcontextenv;
   eval `python /Users/andrewoseen/git/amo-prj-utilities/setcontext/setcontext.py setcontext $1`;
 }
 
@@ -20,10 +30,12 @@ removecontext () {
     then
       echo "No arguments"
       local project=$(basename "$PWD")
+
     else
       local project=$1
   fi
   echo "Removing context: $project"
+
 
   #set directory
   cd ~/git/
