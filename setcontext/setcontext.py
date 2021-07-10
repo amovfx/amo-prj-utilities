@@ -26,6 +26,7 @@ class CONTEXT(Enum):
     PROJECT = "PROJECT"
     SERVICE = "SERVICE"
     VERSION = "VERSION"
+    ACTIVECONTEXT = "ACTIVECONTEXT"
 
     @classmethod
     def has_value(cls, value):
