@@ -506,7 +506,7 @@ class SetContext(object):
         if isinstance(color, TCOLOR):
             color = color.value
         else:
-            if color.type() == str:
+            if isinstance(color, str):
                 color_map = {k.name: k.value for k in TCOLOR}
                 color = color_map[color]
 
