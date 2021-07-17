@@ -1,6 +1,8 @@
-echo "setcontext.sh is now sourced."
-cd ~/git/
-setcontextenv="amo-prj-utilities"
+clear;
+echo "Sourcing bash...."
+echo "    Setcontext.sh is now sourced.";
+cd ~/git/;
+setcontextenv="amo-prj-utilities";
 eval `python /Users/andrewoseen/git/amo-prj-utilities/setcontext/setcontext.py set_terminal_prompt`;
 
 setmodule() {
@@ -23,9 +25,10 @@ removecontext () {
 
   This deletes the gcloud project, conda environment, reemote repo, local repo
   and clears the environment.
+  todo: add print statements on the different critical stages.
 
   '
-  conda activate amo-prj-utilities
+  conda activate $setcontextenv;
   if [ $# -eq 0 ]
     then
       echo "No arguments"
